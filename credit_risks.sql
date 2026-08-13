@@ -1,5 +1,7 @@
 C:\Users\KADYRBEK\AppData\Roaming\DBeaverData\workspace6\General\Scripts\Credit_risks.sql
 
+
+--- Общая статистика портфеля	
 SELECT
     COUNT(*) AS total_loans, --- общее количество выданных займов 
     SUM(loan_status) AS total_defaults, --- количество дефолтов
