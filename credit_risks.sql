@@ -114,8 +114,8 @@ SELECT
     loan_int_rate,
     loan_status,
     RANK() OVER (PARTITION BY loan_grade ORDER BY loan_int_rate DESC) AS rate_rank_in_grade,
-    AVG(loan_int_rate) OVER (PARTITION BY loan_grade) AS avg_rate_in_grade,
-    AVG(loan_int_rate) OVER () AS overall_avg_rate,
+    AVG(loan_int_rate) OVER (PARTITION BY loan_grade) AS avg_rate_in_grade, --- средняя процентная ставка для текущей категории кредита
+    AVG(loan_int_rate) OVER () AS overall_avg_rate, --- общая средняя процентная ставка
     ROW_NUMBER()   OVER (PARTITION BY loan_grade, loan_status ORDER BY loan_amnt DESC) AS row_num
 FROM loans
 WHERE loan_int_rate IS NOT NULL --- процентная ставка
@@ -147,14 +147,14 @@ SELECT *
 FROM ranked
 WHERE default_rate > 40
 ORDER BY risk_rank
-LIMIT 20;
+LIMIT 20; --- этот запрос находит самые рискованные группы заемщиков
 
 ---Потери от дефолтов
 SELECT
     loan_grade,
     COUNT(*)  AS total_loans,
     SUM(loan_status) AS defaults,
-    SUM(CASE WHEN loan_status = 1 THEN loan_amnt ELSE 0 END) AS loss,
+    SUM(CASE WHEN loan_status = 1 THEN loan_amnt ELSE 0 END) AS loss, --- общая сумма потерь в тысячах
     SUM(loan_amnt) AS total_portfolio,
     ROUND(SUM(CASE WHEN loan_status = 1 THEN loan_amnt ELSE 0 END) * 100.0 / SUM(loan_amnt),2) AS loss_pct_of_portfolio
 FROM loans
